@@ -23,10 +23,11 @@
 }
 
 * { box-sizing: border-box; }
-html { -webkit-text-size-adjust: 100%; }
+html { -webkit-text-size-adjust: 100%; background: var(--paper); }
 
 body {
   margin: 0;
+  min-height: 100%;
   font-family: var(--font);
   color: var(--ink);
   background: var(--paper);
@@ -485,8 +486,11 @@ form { display: grid; gap: 15px; max-width: 580px; }
 
 /* ---------- Language picker (root index) ---------- */
 
+body.has-picker { background: var(--indigo); }
+
 .picker {
   min-height: 82vh;
+  min-height: 82svh; /* altura de viewport "estável" — evita faixa em branco abaixo quando a barra do navegador móvel recolhe/expande */
   display: flex;
   align-items: center;
   background: var(--indigo);
