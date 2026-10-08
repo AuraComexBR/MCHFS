@@ -29,6 +29,7 @@
             <td><%= m.published ? '✓' : '—' %></td>
             <td class="admin-table-actions">
               <a href="/admin/modules/<%= m.id %>/edit?lang=<%= lang %>"><%= t('admin_edit') %></a>
+              <a href="/admin/modules/<%= m.id %>/quiz?lang=<%= lang %>"><%= t('admin_quiz_manage') %></a>
               <form action="/admin/modules/<%= m.id %>/delete?lang=<%= lang %>" method="post"
                 onsubmit="return confirm('<%= lang === 'pt' ? 'Eliminar este módulo?' : 'Delete this module?' %>');">
                 <button type="submit" class="link-button"><%= t('admin_delete') %></button>

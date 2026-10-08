@@ -27,8 +27,48 @@
     <% if (module_.pdf_filename) { %>
       <p><a class="btn btn-outline" href="<%= module_.pdf_filename %>" target="_blank" rel="noopener"><%= t('download_pdf') %></a></p>
     <% } %>
+  </div>
+</section>
 
-    <p style="margin-top:24px;"><a href="/courses?lang=<%= lang %>">&larr; <%= t('course_back') %></a></p>
+<% if (questions && questions.length > 0) { %>
+<section class="alt">
+  <div class="container">
+    <h2><%= t('quiz_title') %></h2>
+    <p class="lead"><%= t('quiz_intro') %></p>
+
+    <% if (lastAttempt) { %>
+      <div class="quiz-result <%= lastAttempt.passed ? 'quiz-result-pass' : 'quiz-result-fail' %>">
+        <strong><%= lastAttempt.passed ? t('quiz_result_passed') : t('quiz_result_failed') %></strong>
+        <p class="mt-0"><%= t('quiz_last_attempt') %>: <%= t('quiz_score') %> <%= lastAttempt.score %>/<%= lastAttempt.total %> (<%= lastAttempt.percentage %>%)</p>
+        <% if (lastAttempt.passed) { %>
+          <p><a class="btn btn-primary" href="/certificate/<%= module_.id %>?lang=<%= lang %>"><%= t('quiz_view_certificate') %></a></p>
+        <% } %>
+      </div>
+    <% } %>
+
+    <form action="/courses/<%= module_.id %>/quiz?lang=<%= lang %>" method="post" class="quiz-form">
+      <% questions.forEach(function(q, qi) { %>
+        <div class="quiz-question">
+          <p class="quiz-question-text"><strong><%= qi + 1 %>.</strong> <%= lang === 'pt' ? q.question_pt : q.question_en %></p>
+          <div class="quiz-options">
+            <% ['a','b','c','d'].forEach(function(opt) { %>
+              <label class="quiz-option">
+                <input type="radio" name="q_<%= q.id %>" value="<%= opt %>" required>
+                <span><%= lang === 'pt' ? q['option_' + opt + '_pt'] : q['option_' + opt + '_en'] %></span>
+              </label>
+            <% }); %>
+          </div>
+        </div>
+      <% }); %>
+      <button type="submit" class="btn btn-primary"><%= lastAttempt ? t('quiz_retry') : t('quiz_submit') %></button>
+    </form>
+  </div>
+</section>
+<% } %>
+
+<section>
+  <div class="container">
+    <p><a href="/courses?lang=<%= lang %>">&larr; <%= t('course_back') %></a></p>
   </div>
 </section>
 

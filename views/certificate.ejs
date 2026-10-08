@@ -1,0 +1,51 @@
+<%- include('partials/head', { title: t('certificate_title'), lang }) %>
+<%- include('partials/nav', { lang, t, user }) %>
+
+<% if (!attempt) { %>
+  <section class="hero">
+    <div class="container">
+      <h1><%= t('certificate_title') %></h1>
+      <p class="lead"><%= t('certificate_not_found') %></p>
+      <p><a class="btn btn-outline" href="/courses/<%= module_.id %>?lang=<%= lang %>">&larr; <%= t('certificate_back') %></a></p>
+    </div>
+  </section>
+<% } else { %>
+  <section>
+    <div class="container">
+      <div class="certificate-sheet">
+        <div class="certificate-mark">
+          <img src="/assets/logo-light.jpg" alt="MCHFS" width="56" height="56">
+        </div>
+        <p class="certificate-eyebrow"><%= t('certificate_subtitle') %></p>
+        <h1 class="certificate-heading"><%= t('certificate_title') %></h1>
+
+        <p class="certificate-line"><%= t('certificate_awarded_to') %></p>
+        <p class="certificate-name"><%= user.name %></p>
+        <p class="certificate-line">
+          <%= t('certificate_completed') %>
+          <strong><%= lang === 'pt' ? module_.title_pt : module_.title_en %></strong>
+        </p>
+
+        <div class="certificate-meta">
+          <div>
+            <span class="certificate-meta-label"><%= t('certificate_score') %></span>
+            <strong><%= attempt.score %>/<%= attempt.total %> (<%= attempt.percentage %>%)</strong>
+          </div>
+          <div>
+            <span class="certificate-meta-label"><%= t('certificate_date') %></span>
+            <strong><%= new Date(attempt.created_at).toLocaleDateString(lang === 'pt' ? 'pt-PT' : 'en-GB') %></strong>
+          </div>
+        </div>
+
+        <p class="certificate-code"><%= t('certificate_code_label') %>: <%= attempt.certificate_code %></p>
+      </div>
+
+      <div class="gap-actions certificate-actions">
+        <button class="btn btn-primary" onclick="window.print()"><%= t('certificate_print') %></button>
+        <a class="btn btn-outline" href="/courses/<%= module_.id %>?lang=<%= lang %>"><%= t('certificate_back') %></a>
+      </div>
+    </div>
+  </section>
+<% } %>
+
+<%- include('partials/foot') %>

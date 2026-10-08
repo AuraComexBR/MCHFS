@@ -106,6 +106,26 @@ function moduleFieldsFromBody(body) {
   };
 }
 
+const PASS_THRESHOLD = 80; // percentagem mínima para gerar certificado
+
+function quizFieldsFromBody(body) {
+  const correct = ['a', 'b', 'c', 'd'].includes(body.correct_option) ? body.correct_option : 'a';
+  return {
+    order_index: parseInt(body.order_index, 10) || 0,
+    question_en: (body.question_en || '').trim(),
+    question_pt: (body.question_pt || '').trim(),
+    option_a_en: (body.option_a_en || '').trim(),
+    option_a_pt: (body.option_a_pt || '').trim(),
+    option_b_en: (body.option_b_en || '').trim(),
+    option_b_pt: (body.option_b_pt || '').trim(),
+    option_c_en: (body.option_c_en || '').trim(),
+    option_c_pt: (body.option_c_pt || '').trim(),
+    option_d_en: (body.option_d_en || '').trim(),
+    option_d_pt: (body.option_d_pt || '').trim(),
+    correct_option: correct,
+  };
+}
+
 // ---------- rotas de autenticação ----------
 app.get('/login', (req, res) => {
   if (req.user) return res.redirect(`/courses?lang=${req.lang}`);
@@ -155,13 +175,119 @@ app.get('/courses/:id', requireLogin, async (req, res) => {
 
   if (!module_) return res.status(404).send('Módulo não encontrado.');
 
+  const { data: questions } = await supabase
+    .from('quiz_questions')
+    .select('*')
+    .eq('module_id', req.params.id)
+    .order('order_index', { ascending: true })
+    .order('id', { ascending: true });
+
+  const { data: lastAttempts } = await supabase
+    .from('quiz_attempts')
+    .select('*')
+    .eq('user_id', req.user.id)
+    .eq('module_id', req.params.id)
+    .order('created_at', { ascending: false })
+    .limit(1);
+
   res.render('course-detail', {
     lang: req.lang,
     t: req.t,
     user: req.user,
     module_,
     embedUrl: toEmbedUrl(module_.youtube_url),
+    questions: questions || [],
+    lastAttempt: (lastAttempts && lastAttempts[0]) || null,
+    passThreshold: PASS_THRESHOLD,
   });
+});
+
+// ---------- checklist (quiz) do módulo ----------
+app.post('/courses/:id/quiz', requireLogin, async (req, res) => {
+  const { data: module_ } = await supabase
+    .from('modules')
+    .select('*')
+    .eq('id', req.params.id)
+    .eq('published', true)
+    .maybeSingle();
+
+  if (!module_) return res.status(404).send('Módulo não encontrado.');
+
+  const { data: questions } = await supabase
+    .from('quiz_questions')
+    .select('*')
+    .eq('module_id', req.params.id);
+
+  if (!questions || questions.length === 0) {
+    return res.redirect(`/courses/${req.params.id}?lang=${req.lang}`);
+  }
+
+  let score = 0;
+  const answers = {};
+  questions.forEach((q) => {
+    const given = (req.body['q_' + q.id] || '').trim().toLowerCase();
+    answers[q.id] = given || null;
+    if (given && given === q.correct_option) score += 1;
+  });
+
+  const total = questions.length;
+  const percentage = Math.round((score / total) * 1000) / 10;
+  const passed = percentage >= PASS_THRESHOLD;
+  const certificateCode = passed ? crypto.randomUUID() : null;
+
+  await supabase.from('quiz_attempts').insert({
+    user_id: req.user.id,
+    module_id: module_.id,
+    score,
+    total,
+    percentage,
+    passed,
+    answers,
+    certificate_code: certificateCode,
+  });
+
+  res.redirect(`/courses/${req.params.id}?lang=${req.lang}`);
+});
+
+// ---------- certificado online ----------
+app.get('/certificate/:moduleId', requireLogin, async (req, res) => {
+  const { data: module_ } = await supabase
+    .from('modules')
+    .select('*')
+    .eq('id', req.params.moduleId)
+    .maybeSingle();
+
+  if (!module_) return res.status(404).send('Módulo não encontrado.');
+
+  const { data: attempts } = await supabase
+    .from('quiz_attempts')
+    .select('*')
+    .eq('user_id', req.user.id)
+    .eq('module_id', req.params.moduleId)
+    .eq('passed', true)
+    .order('created_at', { ascending: false })
+    .limit(1);
+
+  const attempt = (attempts && attempts[0]) || null;
+
+  if (!attempt) {
+    return res.render('certificate', {
+      lang: req.lang, t: req.t, user: req.user, module_, attempt: null,
+    });
+  }
+
+  res.render('certificate', { lang: req.lang, t: req.t, user: req.user, module_, attempt });
+});
+
+// ---------- verificação pública de certificado ----------
+app.get('/certificate/verify/:code', async (req, res) => {
+  const { data: attempt } = await supabase
+    .from('quiz_attempts')
+    .select('*, modules(title_en, title_pt), users(name)')
+    .eq('certificate_code', req.params.code)
+    .maybeSingle();
+
+  res.render('certificate-verify', { lang: req.lang, t: req.t, attempt });
 });
 
 // ---------- painel da administradora ----------
@@ -234,6 +360,70 @@ app.post('/admin/modules/:id', requireLogin, requireAdmin, upload.single('pdf'),
 app.post('/admin/modules/:id/delete', requireLogin, requireAdmin, async (req, res) => {
   await supabase.from('modules').delete().eq('id', req.params.id);
   res.redirect(`/admin?lang=${req.lang}`);
+});
+
+// ---------- gestão da checklist (quiz) por módulo ----------
+app.get('/admin/modules/:id/quiz', requireLogin, requireAdmin, async (req, res) => {
+  const { data: module_ } = await supabase.from('modules').select('*').eq('id', req.params.id).maybeSingle();
+  if (!module_) return res.status(404).send('Módulo não encontrado.');
+
+  const { data: questions } = await supabase
+    .from('quiz_questions')
+    .select('*')
+    .eq('module_id', req.params.id)
+    .order('order_index', { ascending: true })
+    .order('id', { ascending: true });
+
+  res.render('admin-quiz-list', { lang: req.lang, t: req.t, user: req.user, module_, questions: questions || [] });
+});
+
+app.get('/admin/modules/:id/quiz/new', requireLogin, requireAdmin, async (req, res) => {
+  const { data: module_ } = await supabase.from('modules').select('*').eq('id', req.params.id).maybeSingle();
+  if (!module_) return res.status(404).send('Módulo não encontrado.');
+
+  const { data: rows } = await supabase
+    .from('quiz_questions')
+    .select('order_index')
+    .eq('module_id', req.params.id)
+    .order('order_index', { ascending: false })
+    .limit(1);
+  const maxOrder = rows && rows[0] ? rows[0].order_index : 0;
+
+  res.render('admin-quiz-form', {
+    lang: req.lang, t: req.t, user: req.user, module_, question: null, nextOrder: maxOrder + 1,
+  });
+});
+
+app.get('/admin/modules/:id/quiz/:qid/edit', requireLogin, requireAdmin, async (req, res) => {
+  const { data: module_ } = await supabase.from('modules').select('*').eq('id', req.params.id).maybeSingle();
+  if (!module_) return res.status(404).send('Módulo não encontrado.');
+
+  const { data: question } = await supabase
+    .from('quiz_questions')
+    .select('*')
+    .eq('id', req.params.qid)
+    .eq('module_id', req.params.id)
+    .maybeSingle();
+  if (!question) return res.status(404).send('Pergunta não encontrada.');
+
+  res.render('admin-quiz-form', { lang: req.lang, t: req.t, user: req.user, module_, question, nextOrder: null });
+});
+
+app.post('/admin/modules/:id/quiz', requireLogin, requireAdmin, async (req, res) => {
+  const f = quizFieldsFromBody(req.body);
+  await supabase.from('quiz_questions').insert({ ...f, module_id: req.params.id });
+  res.redirect(`/admin/modules/${req.params.id}/quiz?lang=${req.lang}`);
+});
+
+app.post('/admin/modules/:id/quiz/:qid', requireLogin, requireAdmin, async (req, res) => {
+  const f = quizFieldsFromBody(req.body);
+  await supabase.from('quiz_questions').update(f).eq('id', req.params.qid).eq('module_id', req.params.id);
+  res.redirect(`/admin/modules/${req.params.id}/quiz?lang=${req.lang}`);
+});
+
+app.post('/admin/modules/:id/quiz/:qid/delete', requireLogin, requireAdmin, async (req, res) => {
+  await supabase.from('quiz_questions').delete().eq('id', req.params.qid).eq('module_id', req.params.id);
+  res.redirect(`/admin/modules/${req.params.id}/quiz?lang=${req.lang}`);
 });
 
 // Em ambiente serverless (Vercel), o módulo exporta o app em vez de escutar uma porta.

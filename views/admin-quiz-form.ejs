@@ -1,0 +1,65 @@
+<%- include('partials/head', { title: question ? t('admin_quiz_edit') : t('admin_quiz_new'), lang }) %>
+<%- include('partials/nav', { lang, t, user }) %>
+
+<section class="hero">
+  <div class="container">
+    <h1><%= question ? t('admin_quiz_edit') : t('admin_quiz_new') %></h1>
+    <p class="lead"><%= lang === 'pt' ? module_.title_pt : module_.title_en %></p>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <form action="<%= question ? '/admin/modules/' + module_.id + '/quiz/' + question.id + '?lang=' + lang : '/admin/modules/' + module_.id + '/quiz?lang=' + lang %>"
+          method="post">
+
+      <div class="field">
+        <label for="order_index"><%= t('admin_order') %></label>
+        <input type="number" id="order_index" name="order_index" value="<%= question ? question.order_index : (nextOrder || 1) %>">
+      </div>
+
+      <div class="field-row field-row-2">
+        <div class="field">
+          <label for="question_en"><%= t('admin_quiz_question_en') %></label>
+          <textarea id="question_en" name="question_en" required><%= question ? question.question_en : '' %></textarea>
+        </div>
+        <div class="field">
+          <label for="question_pt"><%= t('admin_quiz_question_pt') %></label>
+          <textarea id="question_pt" name="question_pt" required><%= question ? question.question_pt : '' %></textarea>
+        </div>
+      </div>
+
+      <% ['a','b','c','d'].forEach(function(opt) { %>
+        <div class="field-row field-row-2">
+          <div class="field">
+            <label for="option_<%= opt %>_en"><%= t('admin_quiz_option_' + opt + '_en') %></label>
+            <input type="text" id="option_<%= opt %>_en" name="option_<%= opt %>_en"
+                   value="<%= question ? question['option_' + opt + '_en'] : '' %>" required>
+          </div>
+          <div class="field">
+            <label for="option_<%= opt %>_pt"><%= t('admin_quiz_option_' + opt + '_pt') %></label>
+            <input type="text" id="option_<%= opt %>_pt" name="option_<%= opt %>_pt"
+                   value="<%= question ? question['option_' + opt + '_pt'] : '' %>" required>
+          </div>
+        </div>
+      <% }); %>
+
+      <div class="field">
+        <label><%= t('admin_quiz_correct') %></label>
+        <div class="quiz-options">
+          <% ['a','b','c','d'].forEach(function(opt) { %>
+            <label class="quiz-option">
+              <input type="radio" name="correct_option" value="<%= opt %>"
+                <%= (question && question.correct_option === opt) ? 'checked' : (!question && opt === 'a' ? 'checked' : '') %> required>
+              <span><%= opt.toUpperCase() %></span>
+            </label>
+          <% }); %>
+        </div>
+      </div>
+
+      <button type="submit" class="btn btn-primary"><%= t('admin_quiz_save') %></button>
+    </form>
+  </div>
+</section>
+
+<%- include('partials/foot') %>

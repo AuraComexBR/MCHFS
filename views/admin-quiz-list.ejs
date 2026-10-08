@@ -1,0 +1,49 @@
+<%- include('partials/head', { title: t('admin_quiz_title'), lang }) %>
+<%- include('partials/nav', { lang, t, user }) %>
+
+<section class="hero">
+  <div class="container">
+    <h1><%= t('admin_quiz_title') %>: <%= lang === 'pt' ? module_.title_pt : module_.title_en %></h1>
+    <div class="gap-actions" style="justify-content:flex-start;">
+      <a href="/admin/modules/<%= module_.id %>/quiz/new?lang=<%= lang %>" class="btn btn-primary"><%= t('admin_quiz_new') %></a>
+      <a href="/admin?lang=<%= lang %>" class="btn btn-outline"><%= t('admin_quiz_back') %></a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <% if (questions.length === 0) { %>
+      <p class="lead"><%= t('admin_quiz_empty') %></p>
+    <% } else { %>
+      <table class="admin-table">
+        <thead>
+          <tr>
+            <th><%= t('admin_order') %></th>
+            <th><%= t('admin_quiz_question_en') %> / <%= t('admin_quiz_question_pt') %></th>
+            <th><%= t('admin_quiz_correct') %></th>
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          <% questions.forEach(function(q) { %>
+            <tr>
+              <td><%= q.order_index %></td>
+              <td><%= q.question_en %> / <%= q.question_pt %></td>
+              <td style="text-transform:uppercase;"><%= q.correct_option %></td>
+              <td class="admin-table-actions">
+                <a href="/admin/modules/<%= module_.id %>/quiz/<%= q.id %>/edit?lang=<%= lang %>"><%= t('admin_quiz_edit') %></a>
+                <form action="/admin/modules/<%= module_.id %>/quiz/<%= q.id %>/delete?lang=<%= lang %>" method="post"
+                  onsubmit="return confirm('<%= lang === 'pt' ? 'Eliminar esta pergunta?' : 'Delete this question?' %>');">
+                  <button type="submit" class="link-button"><%= t('admin_quiz_delete') %></button>
+                </form>
+              </td>
+            </tr>
+          <% }); %>
+        </tbody>
+      </table>
+    <% } %>
+  </div>
+</section>
+
+<%- include('partials/foot') %>
