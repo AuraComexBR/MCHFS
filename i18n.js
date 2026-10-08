@@ -1,0 +1,77 @@
+// Dicionário mínimo para os textos da interface do app (login,
+// menus, botões). O conteúdo dos módulos em si já é bilíngue no
+// banco de dados (title_en/title_pt, etc.) — isto é só para o
+// "entorno" das páginas dinâmicas.
+const strings = {
+  en: {
+    lang_name: 'EN',
+    login_title: 'Log in',
+    login_email: 'E-mail',
+    login_password: 'Password',
+    login_submit: 'Log in',
+    login_error: 'Incorrect e-mail or password.',
+    logout: 'Log out',
+    nav_courses: 'My courses',
+    nav_admin: 'Manage courses',
+    courses_title: 'Your modules',
+    courses_empty: 'No modules published yet.',
+    course_back: 'Back to modules',
+    admin_title: 'Manage courses',
+    admin_new: 'New module',
+    admin_edit: 'Edit',
+    admin_delete: 'Delete',
+    admin_order: 'Order',
+    admin_title_en: 'Title (English)',
+    admin_title_pt: 'Title (Portuguese)',
+    admin_description_en: 'Short description (English)',
+    admin_description_pt: 'Short description (Portuguese)',
+    admin_content_en: 'Content (English)',
+    admin_content_pt: 'Content (Portuguese)',
+    admin_youtube: 'YouTube link',
+    admin_pdf: 'PDF file (optional)',
+    admin_current_pdf: 'Current file',
+    admin_save: 'Save module',
+    admin_published: 'Published',
+    watch_video: 'Watch on YouTube',
+    download_pdf: 'Download PDF',
+  },
+  pt: {
+    lang_name: 'PT',
+    login_title: 'Iniciar sessão',
+    login_email: 'E-mail',
+    login_password: 'Palavra-passe',
+    login_submit: 'Entrar',
+    login_error: 'E-mail ou palavra-passe incorretos.',
+    logout: 'Terminar sessão',
+    nav_courses: 'Os meus módulos',
+    nav_admin: 'Gerir módulos',
+    courses_title: 'Os seus módulos',
+    courses_empty: 'Ainda não há módulos publicados.',
+    course_back: 'Voltar aos módulos',
+    admin_title: 'Gerir módulos',
+    admin_new: 'Novo módulo',
+    admin_edit: 'Editar',
+    admin_delete: 'Eliminar',
+    admin_order: 'Ordem',
+    admin_title_en: 'Título (inglês)',
+    admin_title_pt: 'Título (português)',
+    admin_description_en: 'Descrição breve (inglês)',
+    admin_description_pt: 'Descrição breve (português)',
+    admin_content_en: 'Conteúdo (inglês)',
+    admin_content_pt: 'Conteúdo (português)',
+    admin_youtube: 'Ligação do YouTube',
+    admin_pdf: 'Ficheiro PDF (opcional)',
+    admin_current_pdf: 'Ficheiro atual',
+    admin_save: 'Guardar módulo',
+    admin_published: 'Publicado',
+    watch_video: 'Ver no YouTube',
+    download_pdf: 'Transferir PDF',
+  },
+};
+
+function translator(lang) {
+  const dict = strings[lang] || strings.en;
+  return (key) => dict[key] || strings.en[key] || key;
+}
+
+module.exports = { strings, translator };

@@ -1,0 +1,28 @@
+<%- include('partials/head', { title: t('courses_title'), lang }) %>
+<%- include('partials/nav', { lang, t, user }) %>
+
+<section class="hero">
+  <div class="container">
+    <h1><%= t('courses_title') %></h1>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <% if (modules.length === 0) { %>
+      <p class="lead"><%= t('courses_empty') %></p>
+    <% } else { %>
+      <div class="journey">
+        <% modules.forEach(function(m, i) { %>
+          <div class="journey-step">
+            <span class="num"><%= i + 1 %></span>
+            <h3><a href="/courses/<%= m.id %>?lang=<%= lang %>"><%= lang === 'pt' ? m.title_pt : m.title_en %></a></h3>
+            <p><%= lang === 'pt' ? m.description_pt : m.description_en %></p>
+          </div>
+        <% }); %>
+      </div>
+    <% } %>
+  </div>
+</section>
+
+<%- include('partials/foot') %>

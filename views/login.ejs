@@ -1,0 +1,29 @@
+<%- include('partials/head', { title: t('login_title'), lang }) %>
+<%- include('partials/nav', { lang, t, user: null }) %>
+
+<section class="hero">
+  <div class="container">
+    <h1><%= t('login_title') %></h1>
+  </div>
+</section>
+
+<section>
+  <div class="container" style="max-width:480px;">
+    <% if (error) { %>
+      <p class="note" style="border-left-color: var(--brick); margin-bottom:18px;"><%= error %></p>
+    <% } %>
+    <form action="/login?lang=<%= lang %>" method="post">
+      <div class="field">
+        <label for="email"><%= t('login_email') %></label>
+        <input type="email" id="email" name="email" required autofocus>
+      </div>
+      <div class="field">
+        <label for="password"><%= t('login_password') %></label>
+        <input type="password" id="password" name="password" required>
+      </div>
+      <button type="submit" class="btn btn-primary btn-block"><%= t('login_submit') %></button>
+    </form>
+  </div>
+</section>
+
+<%- include('partials/foot') %>

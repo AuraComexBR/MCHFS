@@ -1,0 +1,31 @@
+<header class="site-header">
+  <div class="nav-bar">
+    <a href="/" class="brand">
+      <span class="brand-mark">
+        <img src="/assets/logo-light.jpg" alt="MCHFS logo — hands cradling a baby's feet" width="34" height="34" loading="lazy" decoding="async" fetchpriority="low">
+      </span>
+      <span>Maternal &amp; Child Health Friendly Standards</span>
+    </a>
+    <div class="nav-right">
+      <div class="lang-switch">
+        <a href="?lang=en" <%= lang === 'en' ? 'aria-current="page"' : '' %>>EN</a>
+        <span>·</span>
+        <a href="?lang=pt" <%= lang === 'pt' ? 'aria-current="page"' : '' %>>PT</a>
+      </div>
+      <button class="nav-toggle" aria-label="Open menu" aria-expanded="false">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M3 6h18M3 12h18M3 18h18"/></svg>
+      </button>
+    </div>
+  </div>
+  <nav class="nav-links">
+    <% if (user) { %>
+      <a href="/courses?lang=<%= lang %>"><%= t('nav_courses') %></a>
+      <% if (user.role === 'admin') { %>
+        <a href="/admin?lang=<%= lang %>"><%= t('nav_admin') %></a>
+      <% } %>
+      <a href="/logout?lang=<%= lang %>"><%= t('logout') %></a>
+    <% } else { %>
+      <a href="/login?lang=<%= lang %>"><%= t('login_title') %></a>
+    <% } %>
+  </nav>
+</header>

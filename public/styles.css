@@ -1,0 +1,506 @@
+/* ============================================
+   MCHFS — Maternal and Child Health Friendly Standards
+   Design: trilha da jornada (15 meses / 3 fases) como motivo
+   estrutural; paleta inspirada em têxteis africanos e no
+   amanhecer. Fontes do sistema, zero animação de scroll —
+   decisão de performance para conexões instáveis, que também
+   evita o "piloto automático" de fade-in genérico.
+   ============================================ */
+
+:root {
+  --ink: #2a231d;           /* quase-preto quente, nunca cinza-frio */
+  --ink-soft: #5b5147;
+  --paper: #fbf3e7;         /* fundo quente */
+  --paper-deep: #f2e6d3;
+  --indigo: #1f3a44;        /* cor de marca principal */
+  --indigo-deep: #14262d;
+  --amber: #e08d3c;         /* amanhecer / vida nova */
+  --brick: #8c3b2e;         /* terra */
+  --sage: #6b8f71;          /* selo "gratuito" */
+  --line: #ddc9ad;          /* réguas e bordas, tom terra clara */
+  --max: 1080px;
+  --font: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  margin: 0;
+  font-family: var(--font);
+  color: var(--ink);
+  background: var(--paper);
+  line-height: 1.6;
+  font-size: 17px;
+}
+
+img { max-width: 100%; display: block; }
+a { color: var(--indigo); }
+
+.container {
+  max-width: var(--max);
+  margin: 0 auto;
+  padding: 0 20px;
+}
+
+/* ---------- Header / Nav ---------- */
+
+.site-header {
+  background: var(--paper);
+  border-bottom: 1px solid var(--line);
+  position: sticky;
+  top: 0;
+  z-index: 20;
+}
+
+.nav-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 20px;
+  max-width: var(--max);
+  margin: 0 auto;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+  color: var(--ink);
+  font-weight: 700;
+  font-size: 0.86rem;
+  line-height: 1.15;
+  max-width: 210px;
+}
+
+@media (min-width: 480px) {
+  .brand { font-size: 0.98rem; max-width: none; }
+}
+
+/* Marca: logo oficial (mãos em concha segurando pés de bebê,
+   anel dourado) fornecida pela equipa MCHFS. Pré-composta sobre
+   o fundo claro do cabeçalho como JPEG pequeno (~13KB) — muito
+   mais leve do que o PNG original com transparência. */
+.brand-mark {
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.brand-mark img { width: 100%; height: 100%; object-fit: cover; border-radius: 50%; }
+
+.nav-right { display: flex; align-items: center; }
+
+.lang-switch {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  margin-right: 12px;
+}
+
+.lang-switch a { color: var(--ink-soft); text-decoration: none; padding: 4px 2px; }
+.lang-switch a[aria-current="page"] { color: var(--brick); border-bottom: 2px solid var(--brick); }
+.lang-switch span { color: var(--line); }
+
+.nav-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--paper);
+  cursor: pointer;
+}
+
+.nav-toggle svg { width: 20px; height: 20px; }
+
+.nav-links {
+  display: none;
+  flex-direction: column;
+  gap: 2px;
+  padding: 4px 20px 18px;
+  border-top: 1px solid var(--line);
+}
+
+.nav-links.open { display: flex; }
+
+.nav-links a {
+  display: block;
+  padding: 13px 4px;
+  text-decoration: none;
+  color: var(--ink);
+  font-weight: 500;
+  border-bottom: 1px solid var(--line);
+}
+
+.nav-links a[aria-current="page"] { color: var(--brick); font-weight: 700; }
+
+@media (min-width: 720px) {
+  .nav-toggle { display: none; }
+  .nav-links {
+    display: flex !important;
+    flex-direction: row;
+    border-top: none;
+    padding: 0;
+    gap: 26px;
+  }
+  .nav-links a { border-bottom: none; padding: 4px 0; }
+}
+
+/* ---------- Hero ----------
+   Assimétrico: título grande à esquerda, régua vertical âmbar
+   como único elemento decorativo. Sem eyebrow em caixa alta. */
+
+.hero {
+  padding: 52px 0 40px;
+  border-bottom: 1px solid var(--line);
+  position: relative;
+}
+
+.hero .container {
+  border-left: 3px solid var(--amber);
+  padding-left: 24px;
+}
+
+.hero h1 {
+  font-size: 2rem;
+  line-height: 1.18;
+  letter-spacing: -0.01em;
+  margin: 0 0 16px;
+  color: var(--indigo);
+  max-width: 18ch;
+}
+
+.hero p {
+  font-size: 1.08rem;
+  color: var(--ink-soft);
+  margin: 0 0 22px;
+  max-width: 52ch;
+}
+
+.hero .kicker {
+  display: block;
+  font-size: 0.95rem;
+  color: var(--brick);
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+@media (min-width: 720px) {
+  .hero h1 { font-size: 2.6rem; }
+}
+
+/* ---------- Buttons ---------- */
+
+.btn {
+  display: inline-block;
+  padding: 13px 24px;
+  border-radius: 4px;
+  text-decoration: none;
+  font-weight: 700;
+  font-size: 0.98rem;
+  border: 1.5px solid transparent;
+  cursor: pointer;
+  text-align: center;
+}
+
+.btn-primary { background: var(--indigo); color: var(--paper); }
+.btn-primary:hover { background: var(--indigo-deep); }
+
+.btn-outline { background: transparent; border-color: var(--indigo); color: var(--indigo); }
+
+.btn-outline-light { background: transparent; border-color: var(--paper); color: var(--paper); }
+.btn-outline-light:hover { background: rgba(251, 243, 231, 0.1); }
+
+.btn-block { display: block; width: 100%; }
+
+/* ---------- Sections ---------- */
+
+section { padding: 40px 0; }
+section.alt { background: var(--paper-deep); }
+
+h2 {
+  font-size: 1.5rem;
+  color: var(--indigo);
+  margin: 0 0 18px;
+  max-width: 30ch;
+}
+
+h3 { font-size: 1.12rem; margin: 0 0 8px; color: var(--ink); }
+
+.lead { font-size: 1.03rem; color: var(--ink-soft); max-width: 62ch; }
+
+p { max-width: 66ch; }
+
+/* ---------- Pillars (Visão / Missão / Objetivo) ----------
+   Lista editorial com réguas, não cards idênticos com sombra. */
+
+.pillars {
+  display: grid;
+  gap: 0;
+  border-top: 1px solid var(--line);
+}
+
+.pillar {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 6px;
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.pillar h3 { color: var(--brick); }
+
+@media (min-width: 720px) {
+  .pillar {
+    grid-template-columns: 200px 1fr;
+    gap: 24px;
+    align-items: baseline;
+  }
+}
+
+/* ---------- What you get: lista com marcador de cor, não card ---------- */
+
+.feature-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 22px;
+}
+
+@media (min-width: 720px) {
+  .feature-list { grid-template-columns: repeat(3, 1fr); gap: 28px; }
+}
+
+.feature-list li { border-top: 3px solid var(--amber); padding-top: 14px; }
+.feature-list li:nth-child(2) { border-top-color: var(--brick); }
+.feature-list li:nth-child(3) { border-top-color: var(--sage); }
+
+/* ---------- Trilha da jornada (fases) ----------
+   Sequência real (3 fases / 15 meses) — os números são
+   informação, não decoração. Trilha vertical contínua. */
+
+.journey {
+  position: relative;
+  padding-left: 46px;
+  display: grid;
+  gap: 30px;
+}
+
+.journey::before {
+  content: "";
+  position: absolute;
+  left: 17px;
+  top: 6px;
+  bottom: 6px;
+  width: 2px;
+  background: var(--line);
+}
+
+.journey-step { position: relative; }
+
+.journey-step .num {
+  position: absolute;
+  left: -46px;
+  top: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  background: var(--indigo);
+  color: var(--paper);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.95rem;
+  border: 3px solid var(--paper);
+  box-shadow: 0 0 0 2px var(--line);
+}
+
+.journey-step h3 { margin-bottom: 4px; }
+
+/* ---------- Perfil de mentora ----------
+   Editorial: régua colorida + nome grande, sem avatar
+   de "iniciais em círculo" estilo SaaS. */
+
+.mentor {
+  padding: 26px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.mentor:last-child { border-bottom: none; }
+
+.mentor-mark {
+  width: 40px;
+  height: 4px;
+  background: var(--amber);
+  margin-bottom: 14px;
+}
+
+.mentor:nth-child(2) .mentor-mark { background: var(--brick); }
+.mentor:nth-child(3) .mentor-mark { background: var(--sage); }
+
+.mentor h3 { font-size: 1.3rem; color: var(--indigo); margin-bottom: 2px; }
+
+.mentor .role {
+  color: var(--brick);
+  font-size: 0.92rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+}
+
+.note {
+  background: var(--paper-deep);
+  border-left: 3px solid var(--amber);
+  padding: 12px 16px;
+  font-size: 0.92rem;
+  color: var(--ink-soft);
+  max-width: 60ch;
+}
+
+/* ---------- Selo "gratuito" ---------- */
+
+.badge-free {
+  display: inline-block;
+  background: var(--sage);
+  color: #fff;
+  font-size: 0.85rem;
+  font-weight: 700;
+  padding: 5px 12px;
+  border-radius: 4px;
+}
+
+/* ---------- Forms ---------- */
+
+form { display: grid; gap: 15px; max-width: 580px; }
+
+.field label { display: block; font-weight: 600; font-size: 0.92rem; margin-bottom: 5px; }
+
+.field input, .field select, .field textarea {
+  width: 100%;
+  padding: 12px;
+  font-size: 1rem;
+  border: 1px solid var(--line);
+  border-radius: 4px;
+  font-family: inherit;
+  background: #fff;
+  color: var(--ink);
+}
+
+.field input:focus, .field select:focus, .field textarea:focus {
+  outline: 2px solid var(--indigo);
+  outline-offset: 1px;
+}
+
+.field textarea { resize: vertical; min-height: 90px; }
+
+.field-row { display: grid; gap: 15px; }
+
+@media (min-width: 560px) {
+  .field-row-2 { grid-template-columns: 1fr 1fr; }
+}
+
+/* ---------- Admin table ---------- */
+
+.admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.95rem;
+}
+
+.admin-table th, .admin-table td {
+  text-align: left;
+  padding: 12px 10px;
+  border-bottom: 1px solid var(--line);
+}
+
+.admin-table th { color: var(--ink-soft); font-weight: 600; font-size: 0.85rem; }
+
+.admin-table-actions { display: flex; gap: 14px; align-items: center; white-space: nowrap; }
+
+.link-button {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--brick);
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
+/* ---------- Layout grid (structural only — no card styling) ---------- */
+
+.grid { display: grid; gap: 30px; grid-template-columns: 1fr; }
+
+@media (min-width: 720px) {
+  .grid-2 { grid-template-columns: 1.1fr 0.9fr; }
+}
+
+/* ---------- Resource list ---------- */
+
+.resource-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: 0;
+  border-top: 1px solid var(--line);
+}
+
+.resource-list li {
+  padding: 20px 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.resource-list h3 { color: var(--indigo); }
+
+/* ---------- Footer ---------- */
+
+.site-footer {
+  background: var(--indigo-deep);
+  color: #ece3d6;
+  padding: 34px 0;
+  margin-top: 10px;
+}
+
+.site-footer a { color: var(--amber); }
+
+.footer-grid { display: grid; gap: 22px; }
+
+@media (min-width: 640px) {
+  .footer-grid { grid-template-columns: 1fr 1fr; }
+}
+
+.site-footer strong { color: #fff; }
+.site-footer small { color: #b9ab98; }
+
+/* ---------- Language picker (root index) ---------- */
+
+.picker {
+  min-height: 82vh;
+  display: flex;
+  align-items: center;
+  background: var(--indigo);
+}
+
+.picker .container { text-align: center; border-left: none; padding-left: 20px; }
+.picker h1 { color: var(--paper); }
+.picker p { color: #cfd9db; margin: 0 auto 26px; }
+
+/* ---------- Utility ---------- */
+
+.mt-0 { margin-top: 0; }
+.gap-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 6px; justify-content: center; }
+
+@media (prefers-reduced-motion: reduce) {
+  * { scroll-behavior: auto !important; }
+}

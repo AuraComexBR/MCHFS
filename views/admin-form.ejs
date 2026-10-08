@@ -1,0 +1,80 @@
+<%- include('partials/head', { title: t('admin_title'), lang }) %>
+<%- include('partials/nav', { lang, t, user }) %>
+
+<section class="hero">
+  <div class="container">
+    <h1><%= module_ ? t('admin_edit') : t('admin_new') %></h1>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <form action="<%= module_ ? '/admin/modules/' + module_.id + '?lang=' + lang : '/admin/modules?lang=' + lang %>"
+          method="post" enctype="multipart/form-data">
+
+      <div class="field-row field-row-2">
+        <div class="field">
+          <label for="order_index"><%= t('admin_order') %></label>
+          <input type="number" id="order_index" name="order_index" value="<%= module_ ? module_.order_index : (nextOrder || 1) %>">
+        </div>
+        <div class="field">
+          <label>
+            <input type="checkbox" name="published" <%= (!module_ || module_.published) ? 'checked' : '' %> style="width:auto; display:inline-block;">
+            <%= t('admin_published') %>
+          </label>
+        </div>
+      </div>
+
+      <div class="field-row field-row-2">
+        <div class="field">
+          <label for="title_en"><%= t('admin_title_en') %></label>
+          <input type="text" id="title_en" name="title_en" value="<%= module_ ? module_.title_en : '' %>" required>
+        </div>
+        <div class="field">
+          <label for="title_pt"><%= t('admin_title_pt') %></label>
+          <input type="text" id="title_pt" name="title_pt" value="<%= module_ ? module_.title_pt : '' %>" required>
+        </div>
+      </div>
+
+      <div class="field-row field-row-2">
+        <div class="field">
+          <label for="description_en"><%= t('admin_description_en') %></label>
+          <textarea id="description_en" name="description_en"><%= module_ ? module_.description_en : '' %></textarea>
+        </div>
+        <div class="field">
+          <label for="description_pt"><%= t('admin_description_pt') %></label>
+          <textarea id="description_pt" name="description_pt"><%= module_ ? module_.description_pt : '' %></textarea>
+        </div>
+      </div>
+
+      <div class="field-row field-row-2">
+        <div class="field">
+          <label for="content_en"><%= t('admin_content_en') %></label>
+          <textarea id="content_en" name="content_en" style="min-height:160px;"><%= module_ ? module_.content_en : '' %></textarea>
+        </div>
+        <div class="field">
+          <label for="content_pt"><%= t('admin_content_pt') %></label>
+          <textarea id="content_pt" name="content_pt" style="min-height:160px;"><%= module_ ? module_.content_pt : '' %></textarea>
+        </div>
+      </div>
+
+      <div class="field">
+        <label for="youtube_url"><%= t('admin_youtube') %></label>
+        <input type="url" id="youtube_url" name="youtube_url" placeholder="https://www.youtube.com/watch?v=…"
+               value="<%= module_ ? module_.youtube_url : '' %>">
+      </div>
+
+      <div class="field">
+        <label for="pdf"><%= t('admin_pdf') %></label>
+        <input type="file" id="pdf" name="pdf" accept="application/pdf">
+        <% if (module_ && module_.pdf_filename) { %>
+          <p class="note"><%= t('admin_current_pdf') %>: <a href="<%= module_.pdf_filename %>" target="_blank" rel="noopener">PDF</a></p>
+        <% } %>
+      </div>
+
+      <button type="submit" class="btn btn-primary"><%= t('admin_save') %></button>
+    </form>
+  </div>
+</section>
+
+<%- include('partials/foot') %>

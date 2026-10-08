@@ -1,0 +1,35 @@
+<%- include('partials/head', { title: lang === 'pt' ? module_.title_pt : module_.title_en, lang }) %>
+<%- include('partials/nav', { lang, t, user }) %>
+
+<section class="hero">
+  <div class="container">
+    <h1><%= lang === 'pt' ? module_.title_pt : module_.title_en %></h1>
+    <% var desc = lang === 'pt' ? module_.description_pt : module_.description_en; %>
+    <% if (desc) { %><p><%= desc %></p><% } %>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <% if (embedUrl) { %>
+      <div style="position:relative; padding-top:56.25%; max-width:720px; margin-bottom:24px; background:var(--indigo-deep);">
+        <iframe src="<%= embedUrl %>" title="<%= lang === 'pt' ? module_.title_pt : module_.title_en %>"
+          style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;"
+          loading="lazy" allowfullscreen></iframe>
+      </div>
+    <% } %>
+
+    <% var content = lang === 'pt' ? module_.content_pt : module_.content_en; %>
+    <% if (content) { %>
+      <p style="white-space: pre-line;"><%= content %></p>
+    <% } %>
+
+    <% if (module_.pdf_filename) { %>
+      <p><a class="btn btn-outline" href="<%= module_.pdf_filename %>" target="_blank" rel="noopener"><%= t('download_pdf') %></a></p>
+    <% } %>
+
+    <p style="margin-top:24px;"><a href="/courses?lang=<%= lang %>">&larr; <%= t('course_back') %></a></p>
+  </div>
+</section>
+
+<%- include('partials/foot') %>

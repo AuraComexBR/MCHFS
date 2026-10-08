@@ -1,0 +1,44 @@
+<%- include('partials/head', { title: t('admin_title'), lang }) %>
+<%- include('partials/nav', { lang, t, user }) %>
+
+<section class="hero">
+  <div class="container">
+    <h1><%= t('admin_title') %></h1>
+    <div class="gap-actions" style="justify-content:flex-start;">
+      <a href="/admin/modules/new?lang=<%= lang %>" class="btn btn-primary"><%= t('admin_new') %></a>
+    </div>
+  </div>
+</section>
+
+<section>
+  <div class="container">
+    <table class="admin-table">
+      <thead>
+        <tr>
+          <th><%= t('admin_order') %></th>
+          <th><%= t('admin_title_en') %> / <%= t('admin_title_pt') %></th>
+          <th><%= t('admin_published') %></th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% modules.forEach(function(m) { %>
+          <tr>
+            <td><%= m.order_index %></td>
+            <td><%= m.title_en %> / <%= m.title_pt %></td>
+            <td><%= m.published ? '✓' : '—' %></td>
+            <td class="admin-table-actions">
+              <a href="/admin/modules/<%= m.id %>/edit?lang=<%= lang %>"><%= t('admin_edit') %></a>
+              <form action="/admin/modules/<%= m.id %>/delete?lang=<%= lang %>" method="post"
+                onsubmit="return confirm('<%= lang === 'pt' ? 'Eliminar este módulo?' : 'Delete this module?' %>');">
+                <button type="submit" class="link-button"><%= t('admin_delete') %></button>
+              </form>
+            </td>
+          </tr>
+        <% }); %>
+      </tbody>
+    </table>
+  </div>
+</section>
+
+<%- include('partials/foot') %>
